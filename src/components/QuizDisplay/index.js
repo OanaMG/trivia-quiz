@@ -40,7 +40,6 @@ import './QuizDisplay.css';
 
     function handleIncorrectAnswer(){
         setWrongCounter(wrongCounter+1);
-        //console.log (wrongCounter);
         alert("Wrong Answer");
     }
 
@@ -57,7 +56,7 @@ import './QuizDisplay.css';
         {quizInfo.map((item, index) => 
             (<div key={index}> 
                 <h2>{replaceChar(item.question)}</h2>
-                <Button arrayIncorrect={item.incorrect_answers} itemCorrect={item.correct_answer} handleCorrectClick={handleCorrectAnswer} handleIncorrectClick={handleIncorrectAnswer}></Button>
+                <Button arrayIncorrect={item.incorrect_answers} itemCorrect={item.correct_answer} handleCorrectClick={handleCorrectAnswer} handleIncorrectClick={handleIncorrectAnswer} cleanText={replaceChar}></Button>
             </div>)
         )}
         <button className="next-level-button" onClick={handleQuizLevel}>Next Level</button>

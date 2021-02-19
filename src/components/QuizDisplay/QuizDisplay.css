@@ -1,4 +1,4 @@
-.correctButton, .incorrectButton {
+.answer-button {
     border-radius: 8px;
     transition-duration: 0.4s;
     margin-bottom: 10px;
@@ -6,12 +6,7 @@
     font-size: 16px;
 }
 
-.correctButton:hover {
-    background-color: #7C7F70;
-    color: white;
-}
-
-.incorrectButton:hover {
+.answer-button:hover {
     background-color: #7C7F70;
     color: white;
 }
