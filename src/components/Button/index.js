@@ -16,10 +16,9 @@ function Button ({arrayIncorrect, itemCorrect, handleCorrectClick, handleIncorre
         return arr;    
     };
 
-    useEffect(() => {
-        shuffle(answersArray);
-        console.log(itemCorrect);
-    }, [])
+    console.log(itemCorrect);
+ 
+    shuffle(answersArray);
 
     return(
     <div>
