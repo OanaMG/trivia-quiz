@@ -6,10 +6,10 @@ function useRandomizer(min = 1, max = 151)
 
     function randomize()
     {
-        setNumber(Math.floor(Math.random()*max)+min)
+        setNumber(Math.floor(Math.random() * (max-min))+ min);
     }
 
     return [number, randomize];
 }
 
-export default useRandomizer
+export default useRandomizer;
