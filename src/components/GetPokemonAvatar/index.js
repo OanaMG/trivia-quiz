@@ -1,14 +1,10 @@
 import { useEffect, useState } from 'react';
-import useRandomizer from "../hooks/useRandomizer"
+//import useRandomizer from "../hooks/useRandomizer"
 
 function GetPokemonAvatar(){
-    const [pokemon, setpokemon] = useState({});
+    const [pokemon, setPokemon] = useState({});
     const [id, setId] = useState(randomNumber());
 
-    
-    // const [number, randomize] = useRandomizer();
-    //     // randomize();
-    //     setId(number);
     function randomNumber(min = 1, max =  151){
         return (Math.floor(Math.random()*max)+min);
     };
@@ -17,30 +13,19 @@ function GetPokemonAvatar(){
         async function fetchPokemon(){
             const result = await fetch(`${process.env.REACT_APP_POKEMONAPI_URL}${id}`);
             const data = await result.json();
-            console.log(data)
-            setpokemon(data);
+            //console.log(data)
+            setPokemon(data);
         }
-        setId(randomNumber(1, 151))
-        console.log(id);
+        setId(id);
+        //console.log(id);
         fetchPokemon();
     },[]);
 
-    // // async function fetchPokemon(){
-    // //     const result = await fetch(process.env.REACT_APP_POKEMONAPI_URL+{id});
-    // //     const data = await result.json();
-    // //     console.log(data);
-    // //     setpokemon(data);
-    // }
-
-
     return (
         <div>
-            <img src= {pokemon.sprites?.front_default}></img>
+            <img src= {pokemon.sprites?.front_default} alt={pokemon.id}></img>
         </div>
     )
-
-
-
 
 }
 
