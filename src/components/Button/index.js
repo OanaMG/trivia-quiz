@@ -1,19 +1,19 @@
 import React, {useState} from "react";
 import '../App/App.css';
 
-function Button ({answersArray, handleCorrectClick, handleIncorrectClick}){
-    const [isDisabled, setDisabled] = useState(false);
-
+function Button ({question, answersArray, handleCorrectClick, handleIncorrectClick, disabledStatus}){
+    //console.log("second"+disabledStatus);
+   // console.log("Button question " + question);
     return(
     <div>
         {answersArray.map ((item, index) =>
             (<div key={index}>
-                <button disabled={isDisabled} className="answer-button" onClick={ () => {
-                    setDisabled(true);
+                <button disabled={disabledStatus} className="answer-button" onClick={ () => {
+                    //setDisabled(true);
                     if(item.isCorrect){
-                        handleCorrectClick();
+                        handleCorrectClick(question); //pass in the index
                     } else {
-                        handleIncorrectClick();
+                        handleIncorrectClick(question);
                     }
                 }}>{item.text}</button>
             </div>)

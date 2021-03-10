@@ -5,54 +5,87 @@ import './QuizDisplay.css';
     function QuizDisplay () {
         const [quizInfo, setQuizInfo] = useState([]);
         const [counter, setCounter] = useState(0);
-        const [wrongCounter, setWrongCounter] = useState(0); //wrong answers, not visible on page
-        const [quizLevel, setQuizLevel] = useState(process.env.REACT_APP_TRIVIA_EASY_API_URL);
-        
+        const [questionCounter, setQuestionCounter] = useState(0);
+        const [correctAnswersCompletedLevel, setCorrectAnswersCompletedLevel] = useState(0);
+
         useEffect(() => {
-            async function getQuiz (){
-                let response = await fetch (`${quizLevel}`);
-                let data = await response.json();
-                //console.log(data.results);
-                const consolidatedResults = data.results.map((item)=>{
-                    return {               
-                        answers: shuffle([...item.incorrect_answers.map((answer)=>{
-                            return {text: replaceChar(answer), isCorrect: false}
-                        }), {text: replaceChar(item.correct_answer), isCorrect: true}]),
-                        question: replaceChar(item.question)
-                    }
-                })
-                console.log(consolidatedResults);
-                setQuizInfo(consolidatedResults)
             
-            }
-            getQuiz();
+            getQuiz(process.env.REACT_APP_TRIVIA_BOOKS_EASY_API_URL);
             console.log(quizInfo);
-        }, [quizLevel]);
+        },[]); 
+    
 
+        async function getQuiz (api){
+            let response = await fetch (api);
+            let data = await response.json();
+            //console.log(data.results);
+            const consolidatedResults = data.results.map((item)=>{
+                return {               
+                    answers: shuffle([...item.incorrect_answers.map((answer)=>{
+                        return {text: replaceChar(answer), isCorrect: false}
+                    }), {text: replaceChar(item.correct_answer), isCorrect: true}]),
+                    question: replaceChar(item.question),
+                    disabled: false,
+                }
+            })
+            console.log(consolidatedResults);
+            setQuizInfo(consolidatedResults)
+        }
 
-    function handleQuizLevel() {
-        if(counter+wrongCounter !== 10){
-            alert("You need to answer all the questions");
+    function manageLevelTransition (levelPointsThreshold, currentLevelApi, newLevelApi){
+        if (counter >= levelPointsThreshold && levelPointsThreshold !== 23) {
+            setCorrectAnswersCompletedLevel(counter);
+            alert("Congratulations! You've made it to the next level");
+            getQuiz(newLevelApi);
+        } else if ((counter >= levelPointsThreshold && levelPointsThreshold === 23)) {
+            alert(`Congratulations! You've won the game! You've made a total of ${counter} points out of 30 possible!`);
+            getQuiz(newLevelApi);
+            setCounter(0);
+            setQuestionCounter(0);
         } else {
-            if(counter >= 7){
-                alert("Congratulations! You've made it to the next level");
-                setQuizLevel(process.env.REACT_APP_TRIVIA_MOVIES_EASY_API_URL);
-                //window.location.reload();
-
-            }else{
-                alert(`You only got ${counter} points, but you need at least 7 to pass to the next level`);
-                window.location.reload();
-            }
+            alert(`You only got ${counter} points, but you need at least ${levelPointsThreshold} to pass to the next level`);
+            getQuiz(currentLevelApi);
+            setQuestionCounter(questionCounter-10);
+            setCounter(correctAnswersCompletedLevel);
         }
     }
 
+    function handleQuizLevels() {
+        if((questionCounter <10) || (questionCounter >10 && questionCounter <20))
+        {
+            alert("You need to answer all the questions");
+        } else if (questionCounter === 10) {
+            manageLevelTransition(7, process.env.REACT_APP_TRIVIA_BOOKS_EASY_API_URL,process.env.REACT_APP_TRIVIA_MOVIES_EASY_API_URL);
 
-    function handleCorrectAnswer(){
-        setCounter(counter+1);  
+        } else if (questionCounter === 20){ 
+            manageLevelTransition(15, process.env.REACT_APP_TRIVIA_MOVIES_EASY_API_URL, process.env.REACT_APP_TRIVIA_EASY_API_URL);
+        } else if (questionCounter === 30){
+            manageLevelTransition(23, process.env.REACT_APP_TRIVIA_EASY_API_URL, process.env.REACT_APP_TRIVIA_BOOKS_EASY_API_URL)
+        }     
+    }
+    
+    function changeDisabledStatus(question){        
+        var array = quizInfo.map((item) => {
+            if (item.question === question){         
+                item.disabled = !item.disabled;
+                return item;
+            }
+            return item;
+        })
+        setQuizInfo(array);
     }
 
-    function handleIncorrectAnswer(){
-        setWrongCounter(wrongCounter+1);
+    function handleCorrectAnswer(question){
+        setCounter(counter+1);  
+        setQuestionCounter(questionCounter+1);
+        changeDisabledStatus(question);
+    }
+
+    function handleIncorrectAnswer(question){
+        //setWrongCounter(wrongCounter+1);
+        setQuestionCounter(questionCounter+1);
+
+        changeDisabledStatus(question);
         alert(`Wrong Answer`); //maybe add what the correct answer is
     }
 
@@ -77,13 +110,13 @@ import './QuizDisplay.css';
     return (
     <div id="game-viewer">
         <h1 id="pointsHeader">Points: {counter}</h1>   
-        {quizInfo.map((item, index) => 
-            (<div key={index}> 
+        {quizInfo.map((item, index) => {
+            return (<div key={index}> 
                 <h2>{item.question}</h2>
-                <Button answersArray={item.answers} handleCorrectClick={handleCorrectAnswer} handleIncorrectClick={handleIncorrectAnswer}></Button>
-            </div>)
+                <Button question={item.question} disabledStatus={item.disabled} answersArray={item.answers} handleCorrectClick={handleCorrectAnswer} handleIncorrectClick={handleIncorrectAnswer}></Button>
+            </div>)}
         )}
-        <button className="next-level-button" onClick={handleQuizLevel}>Next Level</button>
+        <button className="next-level-button" onClick={handleQuizLevels}>Next Level</button>
     </div>
     );
 }
