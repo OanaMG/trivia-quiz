@@ -4,7 +4,6 @@ import './index.css';
 import App from '../src/components/App';
 import reportWebVitals from './reportWebVitals';
 
-
 document.title="Quiz Time";
 ReactDOM.render(
   <React.StrictMode>
