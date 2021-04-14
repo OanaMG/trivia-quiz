@@ -1,24 +1,23 @@
 import React, {useState, useEffect} from "react";
-import Button from "../Button";
-import './QuizDisplay.css';
+import { ChakraProvider, Stack, Heading, Flex, Button } from "@chakra-ui/react";
+import QuestionButtons from "../QuestionButtons";
 
-    function QuizDisplay () {
+    function QuizDisplay ({category, showQuiz}) {
         const [quizInfo, setQuizInfo] = useState([]);
         const [counter, setCounter] = useState(0);
         const [questionCounter, setQuestionCounter] = useState(0);
         const [correctAnswersCompletedLevel, setCorrectAnswersCompletedLevel] = useState(0);
 
         useEffect(() => {
-            
-            getQuiz(process.env.REACT_APP_TRIVIA_BOOKS_EASY_API_URL);
-            console.log(quizInfo);
-        },[]); 
-    
+            getQuiz(process.env[`REACT_APP_TRIVIA_${category}_EASY_API_URL`]);
+            }
+        ,[]); 
+
 
         async function getQuiz (api){
             let response = await fetch (api);
             let data = await response.json();
-            //console.log(data.results);
+            console.log(data.results);
             const consolidatedResults = data.results.map((item)=>{
                 return {               
                     answers: shuffle([...item.incorrect_answers.map((answer)=>{
@@ -55,12 +54,12 @@ import './QuizDisplay.css';
         {
             alert("You need to answer all the questions");
         } else if (questionCounter === 10) {
-            manageLevelTransition(7, process.env.REACT_APP_TRIVIA_BOOKS_EASY_API_URL,process.env.REACT_APP_TRIVIA_MOVIES_EASY_API_URL);
+            manageLevelTransition(7, process.env[`REACT_APP_TRIVIA_${category}_EASY_API_URL`], process.env[`REACT_APP_TRIVIA_${category}_MEDIUM_API_URL`]);
 
         } else if (questionCounter === 20){ 
-            manageLevelTransition(15, process.env.REACT_APP_TRIVIA_MOVIES_EASY_API_URL, process.env.REACT_APP_TRIVIA_EASY_API_URL);
+            manageLevelTransition(15, process.env[`REACT_APP_TRIVIA_${category}_MEDIUM_API_URL`], process.env[`REACT_APP_TRIVIA_${category}_HARD_API_URL`]);
         } else if (questionCounter === 30){
-            manageLevelTransition(23, process.env.REACT_APP_TRIVIA_EASY_API_URL, process.env.REACT_APP_TRIVIA_BOOKS_EASY_API_URL)
+            manageLevelTransition(23, process.env[`REACT_APP_TRIVIA_${category}_HARD_API_URL`], process.env[`REACT_APP_TRIVIA_${category}_EASY_API_URL`]);
         }     
     }
     
@@ -86,14 +85,17 @@ import './QuizDisplay.css';
         setQuestionCounter(questionCounter+1);
 
         changeDisabledStatus(question);
-        alert(`Wrong Answer`); //maybe add what the correct answer is
+        //alert(`Wrong Answer`); //maybe add what the correct answer is
     }
 
     function replaceChar(string){
         return string
         .replace(/&amp;/g, '&')
         .replace(/&quot;/g, '"')
-        .replace(/&#039;/g, "'");   
+        .replace(/&#039;/g, "'")
+        .replace(/&euml;/g, "e")
+        .replace(/&eacute;/g, "e")
+        .replace(/&rsquo;/g, "'");   
     }
 
     function shuffle(arr) {
@@ -109,16 +111,25 @@ import './QuizDisplay.css';
     
     return (
     <div id="game-viewer">
-        <h1 id="pointsHeader">Points: {counter}</h1>   
+    <ChakraProvider>
+        <Stack w="70%" align="center" ml="15%" border="solid" bg="pink" borderRadius="3%">
+        {showQuiz ? (<Heading>Points: {counter}</Heading> ) : null}
+        <Heading>Points: {counter}</Heading>   
         {quizInfo.map((item, index) => {
             return (<div key={index}> 
-                <h2>{item.question}</h2>
-                <Button question={item.question} disabledStatus={item.disabled} answersArray={item.answers} handleCorrectClick={handleCorrectAnswer} handleIncorrectClick={handleIncorrectAnswer}></Button>
+                    <Heading size="lg" align="center" mb="1%" mt="2%">{item.question}</Heading>
+                    <Flex direction="column" align="center">
+                        <QuestionButtons question={item.question} disabledStatus={item.disabled} answersArray={item.answers} handleCorrectClick={handleCorrectAnswer} handleIncorrectClick={handleIncorrectAnswer}></QuestionButtons>
+                    </Flex>
+
             </div>)}
         )}
-        <button className="next-level-button" onClick={handleQuizLevels}>Next Level</button>
+        <Button mb="2%" mt="1%" onClick={handleQuizLevels}>Next Level</Button>
+        </Stack>
+        </ChakraProvider>
     </div>
     );
+
 }
 
 export default QuizDisplay;
