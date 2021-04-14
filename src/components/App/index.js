@@ -30,10 +30,11 @@ function App() {
     setShowQuiz(false)
   }
 
-  //console.log("Value " + value);
+  console.log("Value " + value);
 
   return (
     <div className="App">
+      {/* <GetPokemonAvatar /> */}
       <ChakraProvider>
           <Heading align="center" size="4xl" fontWeight="semibold">The Trivia Game</Heading>
           <Heading ml="5%" mb="0.5%">Select Quiz Category</Heading>
@@ -47,6 +48,8 @@ function App() {
         <Heading align="center" mt="30%">Select the quiz category you want and press START QUIZ to begin</Heading>
         </Box>}
       </ChakraProvider>
+
+
     </div>
   );
 }
