@@ -9,15 +9,15 @@ import QuestionButtons from "../QuestionButtons";
         const [correctAnswersCompletedLevel, setCorrectAnswersCompletedLevel] = useState(0);
 
         useEffect(() => {
-            getQuiz(process.env[`REACT_APP_TRIVIA_${category}_EASY_API_URL`]);
-            }
-        ,[]); 
+            getQuiz(process.env[`REACT_APP_TRIVIA_${category}_EASY_API_URL`]);   
+        // eslint-disable-next-line react-hooks/exhaustive-deps
+        },[]); 
 
 
         async function getQuiz (api){
             let response = await fetch (api);
             let data = await response.json();
-            console.log(data.results);
+            //console.log(data.results);
             const consolidatedResults = data.results.map((item)=>{
                 return {               
                     answers: shuffle([...item.incorrect_answers.map((answer)=>{
@@ -27,7 +27,7 @@ import QuestionButtons from "../QuestionButtons";
                     disabled: false,
                 }
             })
-            console.log(consolidatedResults);
+            //console.log(consolidatedResults);
             setQuizInfo(consolidatedResults)
         }
 
